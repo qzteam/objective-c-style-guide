@@ -212,6 +212,118 @@ Instance variables should be camel-case with the leading word being lowercase, a
 id varnm;
 ```
 
+### 名字空间
+
+**各种全局作用范围的函数，常量，类，枚举，结构等命名必须加命名前缀。**
+
+Objective-C中没有C++那样的名字空间概念，也没有Java包名的概念，随着工程代码的增加，难免会出现名字冲突，因此全局作用范围的名字必须唯一。比较经典的做法就是加命名前缀。大多数人认为命名前缀只是在类的前面加几个大写字母，其实不仅仅如此。
+
+* 类型(类、枚举、结构)命名前要加相关模块前缀。
+
+```
+UIView
+NSString
+CGRect
+```
+
+* 常量命名要加相关类型名前缀。
+
+```
+UIApplicationDidFinishLaunchingNotification
+CGRectZero
+```
+
+* 函数命名要加相关类型名前缀。
+
+```
+CGRectMake
+CGPointMake
+```
+
+* 枚举类型命名要加相关类名前缀，并且枚举值命名要加枚举类型前缀。
+
+```
+typedef NS_ENUM(NSInteger, UIViewAnimationTransition) {
+    UIViewAnimationTransitionNone,
+    UIViewAnimationTransitionFlipFromLeft,
+    UIViewAnimationTransitionFlipFromRight,
+    UIViewAnimationTransitionCurlUp,
+    UIViewAnimationTransitionCurlDown,
+};
+
+```
+做到以上几点几乎可以做到名字不会冲突。
+
+### 参数提示
+
+**方法命名时，每个参数前要加参数的名称提示。**
+
+```
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (void)performSegueWithIdentifier:(NSString *)identifier sender:(id)sender
+```
+
+### 对象命名
+
+**给一个带修饰的对象命名时要采用修饰+类型的方式，而不是先指定其类型。**
+
+很多人喜欢把对象的类型放在对象的命名前面，从而来标识一个对象是什么类型，这很不符合Objective-C语言的特点，容易引起歧义，比如一个UILabel对象：
+
+```
+titleLabel      //表示标题的label，是UIlabel对象
+labelTitle      //label的标题？似乎是一个NSString？
+
+confirmButton   //确认按钮
+buttonConfirm   //不自然的命名，看上去像是按钮点击动作。
+
+```
+
+### 方法命名符合语法
+
+大部分方法可以分成下面两类，而这两类往往被乱用。它们是：
+
+* 要什么
+* 做什么
+
+“要什么”表示取得某个对象，要以名词作为方法的开头；“做什么”表示执行某种操作，要以动词作为方法开头。看看下面这个命名方式：
+
+```
+- (XXItem *)itemNamed:(NSString *)name           //Good. 意思清晰
+- (XXItem *)findItemWithName:(NSString *)name    //更像是一种操作，而不是返回一个对象。
+```
+
+
+ `findItemWithName` 这个命名表示一种操作，而无需返回对象，比如它可以用于设置类的内部成员，比如：
+
+```
+- (void)findItemWithName:(NSString *)name{
+    ...
+    self.foundItem = xxx;
+    ...
+}
+```
+
+**get**
+
+“要什么”往往被胡乱命名为get开头的方法。首先get是一个动词，所以它还是“做什么”或者说“做的是要什么”。那么get方法不要用于返回对象，但它可用于参数中返回。
+
+```
+- (XXItem *)getItemAtIndex:(NSUInteger)index                  //Bad!! 不规范的命名
+- (XXItem *)itemAtIndex:(NSUInteger)index                     //Good, 命名清晰
+- (void)getItem:(XXItem **)outItem atIndex:(NSUInteger)index  //比较符合规范，但第二种更好。
+```
+
+### 可知性
+
+**回调时被调用者要知道其调用者**
+
+可以在回调方法中第一个参数中加上调用者：
+
+```
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+- (void)buttonTapped:(UIButton*)sender
+```
+
 ## Comments
 
 When they are needed, comments should be used to explain **why** a particular piece of code does something. Any comments that are used must be kept up-to-date or deleted.
